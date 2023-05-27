@@ -1,0 +1,47 @@
+import org.apache.commons.math3.fraction.Fraction;
+import org.apache.commons.math3.linear.MatrixUtils;
+import org.apache.commons.math3.linear.RealMatrix;
+
+public class MDSMatrixApplication {
+    public static void main(String[] args) {
+        // Define the coefficients for the Galois Field GF(2^8)
+        int[] coefficients = {1, 1, 0, 0, 1, 0, 1, 1, 1};
+        
+        // Create the finite field using the Galois Field elements
+        FiniteField finiteField = new FiniteField(coefficients);
+        
+        // Create the MDS matrix
+        RealMatrix mdsMatrix = createMDSMatrix(finiteField);
+        
+        // Print the MDS matrix
+        printMatrix(mdsMatrix);
+    }
+    
+    // Method to create the MDS matrix
+    public static RealMatrix createMDSMatrix(FiniteField finiteField) {
+        int fieldSize = finiteField.getFieldSize();
+        int matrixSize = 4;
+        RealMatrix mdsMatrix = MatrixUtils.createRealMatrix(matrixSize, matrixSize);
+        
+        // Fill the MDS matrix with values from the Galois Field
+        for (int i = 0; i < matrixSize; i++) {
+            for (int j = 0; j < matrixSize; j++) {
+                // The (i, j) element of the MDS matrix is the inverse of the sum (i + j)
+                Fraction element = finiteField.inverse(finiteField.add(i, j));
+                mdsMatrix.setEntry(i, j, element.doubleValue());
+            }
+        }
+        
+        return mdsMatrix;
+    }
+    
+    // Method to print a matrix
+    public static void printMatrix(RealMatrix matrix) {
+        for (int i = 0; i < matrix.getRowDimension(); i++) {
+            for (int j = 0; j < matrix.getColumnDimension(); j++) {
+                System.out.print(matrix.getEntry(i, j) + " ");
+            }
+            System.out.println();
+        }
+    }
+}
